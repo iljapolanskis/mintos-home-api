@@ -1,0 +1,101 @@
+#!/bin/bash
+
+# Helper functions
+enable_xdebug() {
+  case ${xdebug_version} in
+    v3*)
+      docker-compose exec php bash -c "echo 'xdebug.mode=debug' > /usr/local/etc/php/conf.d/xdebug.ini && echo 'xdebug.start_with_request=yes' >> /usr/local/etc/php/conf.d/xdebug.ini && echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/xdebug.ini && kill -USR2 1"
+      echo "Xdebug enabled (v3)"
+      ;;
+    v2*)
+      docker-compose exec php bash -c "echo 'xdebug.remote_enable=1' > /usr/local/etc/php/conf.d/xdebug.ini && echo 'xdebug.remote_host=host.docker.internal' >> /usr/local/etc/php/conf.d/xdebug.ini && kill -USR2 1"
+      echo "Xdebug enabled (v2)"
+      ;;
+    *)
+      docker-compose exec php bash -c "if command -v docker-php-ext-enable > /dev/null; then docker-php-ext-enable xdebug; fi && kill -USR2 1"
+      echo "Xdebug enabled"
+      ;;
+  esac
+}
+
+disable_xdebug() {
+  case ${xdebug_version} in
+    v3*)
+      docker-compose exec php bash -c "echo 'xdebug.mode=off' > /usr/local/etc/php/conf.d/xdebug.ini && kill -USR2 1"
+      echo "Xdebug disabled (v3)"
+      ;;
+    v2*)
+      docker-compose exec php bash -c "echo 'xdebug.remote_enable=0' > /usr/local/etc/php/conf.d/xdebug.ini && kill -USR2 1"
+      echo "Xdebug disabled (v2)"
+      ;;
+    *)
+      docker-compose exec php bash -c "if [ -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then mv /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini.disabled; fi && kill -USR2 1"
+      echo "Xdebug disabled"
+      ;;
+  esac
+}
+
+get_xdebug_status() {
+  case ${xdebug_version} in
+    v3*)
+      status=$(docker-compose exec -T php php -r 'echo ini_get("xdebug.mode");' 2>/dev/null)
+      if [[ "${status}" =~ .*"debug".* ]]; then
+        echo "1"
+      else
+        echo "0"
+      fi
+      ;;
+    v2*)
+      echo $(docker-compose exec -T php php -r 'echo ini_get("xdebug.remote_enable");')
+      ;;
+    *)
+      if docker-compose exec -T php php -m | grep -q xdebug; then
+        echo "1"
+      else
+        echo "0"
+      fi
+      ;;
+  esac
+}
+
+# Get Xdebug version
+xdebug_version=$(docker-compose exec -T php php -r 'if(extension_loaded("xdebug")) { echo "v" . phpversion("xdebug"); }')
+
+# Handle commands
+if [ $# -eq 0 ]; then
+  enable_xdebug
+  exit
+fi
+
+case $1 in
+  on|true|enable)
+    enable_xdebug
+    ;;
+  off|false|disable)
+    disable_xdebug
+    ;;
+  toggle)
+    status=$(get_xdebug_status)
+    if [ "${status}" = "1" ]; then
+      disable_xdebug
+    else
+      enable_xdebug
+    fi
+    ;;
+  status)
+    status=$(get_xdebug_status)
+    if [ "${status}" = "1" ]; then
+      echo "Xdebug is enabled"
+    else
+      echo "Xdebug is disabled"
+    fi
+    ;;
+  *)
+    echo "Usage: $0 [on|off|enable|disable|true|false|toggle|status]"
+    echo "  on/enable/true    - Enable Xdebug"
+    echo "  off/disable/false - Disable Xdebug"
+    echo "  toggle           - Toggle Xdebug status"
+    echo "  status           - Show current Xdebug status"
+    exit 1
+    ;;
+esac
