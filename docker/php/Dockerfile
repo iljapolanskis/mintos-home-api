@@ -30,9 +30,3 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN curl -sS https://get.symfony.com/cli/installer | bash && mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
 
 WORKDIR /var/www/symfony
-
-# Configure PHP
-COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
-
-# Configure PHP-FPM
-COPY docker/php/www.conf /usr/local/etc/php-fpm.d/www.conf

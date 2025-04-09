@@ -25,7 +25,7 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "33060:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=db
       - MYSQL_DATABASE=db
@@ -33,8 +33,7 @@ services:
       - MYSQL_PASSWORD=db
     volumes:
       - db-data:/var/lib/mysql:rw
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/default.cnf
+      - ./docker/mysql/default.cnf:/etc/mysql/conf.d/my-conf.cnf
 
 volumes:
   db-data:
-
