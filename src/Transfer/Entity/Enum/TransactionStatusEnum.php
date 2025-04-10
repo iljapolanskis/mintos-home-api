@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity\Enum;
+namespace App\Transfer\Entity\Enum;
 
 enum TransactionStatusEnum: int
 {

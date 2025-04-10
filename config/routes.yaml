@@ -1,5 +1,17 @@
 controllers:
     resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+        path: ../src/
+        namespace: App\
+    type: attribute
+
+auth_controllers:
+    resource:
+        path: ../src/Auth/Controller/
+        namespace: App\Auth\Controller
+    type: attribute
+
+transfer_controllers:
+    resource:
+        path: ../src/Transfer/Controller/
+        namespace: App\Transfer\Controller
     type: attribute

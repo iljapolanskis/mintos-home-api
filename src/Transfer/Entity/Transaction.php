@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Transfer\Entity;
 
-use App\Repository\TransactionRepository;
+use App\Transfer\Repository\TransactionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use \App\Entity\Enum\TransactionStatusEnum;
+use App\Transfer\Entity\Enum\TransactionStatusEnum;
 
 #[ORM\Entity(repositoryClass: TransactionRepository::class)]
 class Transaction

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Transfer\Repository;
 
-use App\Entity\Transaction;
+use App\Transfer\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -1,0 +1,15 @@
+#### GET request
+GET {{host}}/api/client/list
+
+#### GET request
+GET {{host}}/api/client/1
+
+### POST request
+POST {{host}}/api/client
+Content-Type: application/json
+
+{
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane2.doe@example.com"
+}

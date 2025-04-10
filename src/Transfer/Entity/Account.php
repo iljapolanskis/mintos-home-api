@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Entity;
+namespace App\Transfer\Entity;
 
-use App\Repository\AccountRepository;
+use App\Transfer\Repository\AccountRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use \App\Entity\Enum\CurrencyEnum;
+use App\Transfer\Entity\Enum\CurrencyEnum;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 class Account

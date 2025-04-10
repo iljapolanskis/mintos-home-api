@@ -16,51 +16,71 @@ final class Version20250409145704 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $clientTable = $schema->createTable('client');
-        $clientTable->addColumn('id', 'integer', ['autoincrement' => true]);
-        $clientTable->addColumn('first_name', 'string', ['length' => 255]);
-        $clientTable->addColumn('last_name', 'string', ['length' => 255]);
-        $clientTable->addColumn('email', 'string', ['length' => 255]);
-        $clientTable->addColumn('created_at', 'datetime_immutable');
-        $clientTable->addColumn('updated_at', 'datetime_immutable');
-        $clientTable->setPrimaryKey(['id']);
-        $clientTable->addUniqueIndex(['email']);
-
-        $accountTable = $schema->createTable('account');
-        $accountTable->addColumn('id', 'integer', ['autoincrement' => true]);
-        $accountTable->addColumn('client_id', 'integer');
-        $accountTable->addColumn('number', 'string', ['length' => 255]);
-        $accountTable->addColumn('currency', 'integer');
-        $accountTable->addColumn('balance', 'decimal', ['precision' => 15, 'scale' => 2]);
-        $accountTable->addColumn('created_at', 'datetime_immutable');
-        $accountTable->addColumn('updated_at', 'datetime_immutable');
-        $accountTable->setPrimaryKey(['id']);
-        $accountTable->addIndex(['client_id']);
-        $accountTable->addUniqueIndex(['number']);
-        $accountTable->addForeignKeyConstraint('client', ['client_id'], ['id']);
-
-        $transactionTable = $schema->createTable('transaction');
-        $transactionTable->addColumn('id', 'integer', ['autoincrement' => true]);
-        $transactionTable->addColumn('from_account_id', 'integer');
-        $transactionTable->addColumn('to_account_id', 'integer');
-        $transactionTable->addColumn('from_amount', 'decimal', ['precision' => 15, 'scale' => 2]);
-        $transactionTable->addColumn('to_amount', 'decimal', ['precision' => 15, 'scale' => 2]);
-        $transactionTable->addColumn('exchange_rate', 'decimal', ['precision' => 15, 'scale' => 15]);
-        $transactionTable->addColumn('reference', 'string', ['length' => 255]);
-        $transactionTable->addColumn('status', 'integer');
-        $transactionTable->addColumn('created_at', 'datetime_immutable');
-        $transactionTable->setPrimaryKey(['id']);
-        $transactionTable->addIndex(['from_account_id']);
-        $transactionTable->addIndex(['to_account_id']);
-        $transactionTable->addUniqueIndex(['reference']);
-        $transactionTable->addForeignKeyConstraint('account', ['from_account_id'], ['id']);
-        $transactionTable->addForeignKeyConstraint('account', ['to_account_id'], ['id']);
+        $this->addSql(<<<'SQL'
+        CREATE TABLE account (id INT AUTO_INCREMENT NOT NULL,
+             client_id INT NOT NULL,
+             number VARCHAR(255) NOT NULL,
+             currency INT NOT NULL,
+             balance NUMERIC(15, 2) NOT NULL,
+             created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+             updated_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+             UNIQUE INDEX UNIQ_7D3656A496901F54 (number),
+             INDEX IDX_7D3656A419EB6921 (client_id),
+             PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+        CREATE TABLE client (id INT AUTO_INCREMENT NOT NULL,
+             first_name VARCHAR(255) NOT NULL,
+             last_name VARCHAR(255) NOT NULL,
+             created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+             updated_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+             PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+        CREATE TABLE transaction (id INT AUTO_INCREMENT NOT NULL,
+             from_account_id INT NOT NULL,
+             to_account_id INT NOT NULL,
+             from_amount NUMERIC(15, 2) NOT NULL,
+             to_amount NUMERIC(15, 2) NOT NULL,
+             exchange_rate NUMERIC(15, 15) NOT NULL,
+             reference VARCHAR(255) NOT NULL,
+             created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
+             status INT NOT NULL,
+             UNIQUE INDEX UNIQ_723705D1AEA34913 (reference),
+             INDEX IDX_723705D1B0CF99BD (from_account_id),
+             INDEX IDX_723705D1BC58BDC7 (to_account_id),
+             PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE account ADD CONSTRAINT FK_7D3656A419EB6921 FOREIGN KEY (client_id) REFERENCES client (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction ADD CONSTRAINT FK_723705D1B0CF99BD FOREIGN KEY (from_account_id) REFERENCES account (id)
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction ADD CONSTRAINT FK_723705D1BC58BDC7 FOREIGN KEY (to_account_id) REFERENCES account (id)
+        SQL);
     }
 
     public function down(Schema $schema): void
     {
-        $schema->dropTable('transaction');
-        $schema->dropTable('account');
-        $schema->dropTable('client');
+        $this->addSql(<<<'SQL'
+            ALTER TABLE account DROP FOREIGN KEY FK_7D3656A419EB6921
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction DROP FOREIGN KEY FK_723705D1B0CF99BD
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction DROP FOREIGN KEY FK_723705D1BC58BDC7
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE account
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE client
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE transaction
+        SQL);
     }
 }
