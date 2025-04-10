@@ -1,0 +1,59 @@
+#### Register a new user
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "user@example.com",
+    "password": "password123",
+    "firstName": "Test",
+    "lastName": "User"
+}
+
+### Login to get an API token
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "user@example.com",
+    "password": "password123"
+}
+
+### Get current user details (requires API token)
+GET {{host}}/api/auth/me
+Authorization: {{api_token}}
+
+### Get current user details with Bearer prefix (alternative)
+GET {{host}}/api/auth/me
+Authorization: Bearer {{api_token}}
+
+### Log out (invalidate current token)
+POST {{host}}/api/auth/logout
+Authorization: Bearer {{api_token}}
+
+### Admin: List all users (requires admin token)
+GET {{host}}/api/admin/users
+Authorization: Bearer {{admin_api_token}}
+
+### Admin: Update user roles (requires admin token)
+PATCH {{host}}/api/admin/users/1/roles
+Content-Type: application/json
+Authorization: Bearer {{admin_api_token}}
+
+{
+    "roles": [
+        "ROLE_USER",
+        "ROLE_ADMIN"
+    ]
+}
+
+### Admin: Create a new admin user (requires admin token)
+POST {{host}}/api/admin/create-admin
+Content-Type: application/json
+Authorization: Bearer {{admin_api_token}}
+
+{
+    "email": "admin@example.com",
+    "password": "admin123",
+    "firstName": "Admin",
+    "lastName": "User"
+}

@@ -2,11 +2,9 @@ parameters:
 
 services:
   _defaults:
-    autowire: true      # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    autowire: true
+    autoconfigure: true
 
-
-  # Register domains as separate service containers
   App\Auth\:
     resource: '../src/Auth/'
     exclude:
@@ -18,14 +16,10 @@ services:
       - '../src/Transfer/Entity/'
 
   # Common services
-  App\Service\:
-    resource: '../src/Service/'
-
-  App\DataFixtures\:
-    resource: '../src/DataFixtures/'
-
   App\:
     resource: '../src/'
     exclude:
       - '../src/DependencyInjection/'
       - '../src/Kernel.php'
+      - '../src/Auth'
+      - '../src/Transfer'

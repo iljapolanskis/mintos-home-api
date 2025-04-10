@@ -1,9 +1,3 @@
-controllers:
-    resource:
-        path: ../src/
-        namespace: App\
-    type: attribute
-
 auth_controllers:
     resource:
         path: ../src/Auth/Controller/

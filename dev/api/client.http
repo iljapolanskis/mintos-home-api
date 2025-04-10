@@ -1,5 +1,14 @@
 #### GET request
 GET {{host}}/api/client/list
+X-API-TOKEN: {{api_token}}
+
+#### GET request
+GET {{host}}/api/client/list
+X-API-TOKEN: {{api_token}}
+
+#### GET request
+GET {{host}}/api/client/self
+X-API-TOKEN: {{api_token}}
 
 #### GET request
 GET {{host}}/api/client/1
@@ -10,6 +19,15 @@ Content-Type: application/json
 
 {
     "firstName": "Jane",
-    "lastName": "Doe",
-    "email": "jane2.doe@example.com"
+    "lastName": "Doe"
+}
+
+### POST request
+POST {{host}}/api/client
+Content-Type: application/json
+X-API-TOKEN: {{api_token}}
+
+{
+    "firstName": "Jane",
+    "lastName": "Doe"
 }

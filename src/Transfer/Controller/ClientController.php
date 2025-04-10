@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Transfer\Controller;
 
+use App\Auth\Entity\User;
+use App\Auth\Repository\UserRepository;
 use App\Transfer\Entity\Client;
 use App\Transfer\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,10 +31,33 @@ class ClientController extends AbstractController
     #[Route('/list', name: 'client_list', methods: ['GET'])]
     public function list(): Response
     {
-
         $clients = $this->clientRepository->findAll();
 
+        if (empty($clients)) {
+            $clients = [
+                'status' => Response::$statusTexts[Response::HTTP_NO_CONTENT],
+                'message' => 'No clients found',
+            ];
+        }
+
         return $this->json($clients, Response::HTTP_OK, [], []);
+    }
+
+    #[Route('/self', name: 'client_self', methods: ['GET'])]
+    public function self(): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $client = $user?->getClient();
+
+        if (!$client) {
+            return $this->json([
+                'status' => Response::$statusTexts[Response::HTTP_NOT_FOUND],
+                'message' => 'Client not found',
+            ], Response::HTTP_NOT_FOUND, [], []);
+        }
+
+        return $this->json($client, Response::HTTP_OK, [], []);
     }
 
     #[Route('/{id}', name: 'client_get', methods: ['GET'])]
@@ -50,15 +75,27 @@ class ClientController extends AbstractController
         return $this->json($client, Response::HTTP_OK, [], []);
     }
 
+
     #[Route('', name: 'client_create', methods: ['POST'])]
     public function create(Request $request): Response
     {
         try {
-            if ('json' !== $request->getContentTypeFormat()) {
+            if ($request->getContentTypeFormat() !== 'json') {
                 throw new BadRequestException('Unsupported content format');
             }
 
+            /** @var ?User $user */
+            $user = $this->getUser();
+            $existingClient = $user?->getClient();
+            if ($existingClient) {
+                return $this->json([
+                    'status' => Response::$statusTexts[Response::HTTP_CONFLICT],
+                    'message' => 'Client already exists',
+                ], Response::HTTP_CONFLICT);
+            }
+
             $client = $this->serializer->deserialize($request->getContent(), Client::class, 'json');
+            $client->setUser($user);
 
             $errors = $this->validator->validate($client);
             if (count($errors) > 0) {

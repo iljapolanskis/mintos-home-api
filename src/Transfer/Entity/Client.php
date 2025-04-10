@@ -6,8 +6,8 @@ use App\Transfer\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Auth\Entity\User;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -36,6 +36,7 @@ class Client
     #[ORM\OneToMany(targetEntity: Account::class, mappedBy: 'client')]
     private Collection $accounts;
 
+    #[Ignore]
     #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
     private ?User $user = null;
 
@@ -83,12 +84,14 @@ class Client
         return $this->updatedAt;
     }
 
+    #[Ignore]
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
         $this->createdAt = new \DateTimeImmutable();
     }
 
+    #[Ignore]
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void

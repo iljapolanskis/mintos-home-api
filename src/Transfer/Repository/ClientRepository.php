@@ -2,6 +2,7 @@
 
 namespace App\Transfer\Repository;
 
+use App\Auth\Entity\User;
 use App\Transfer\Entity\Client;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
