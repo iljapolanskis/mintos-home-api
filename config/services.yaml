@@ -1,19 +1,10 @@
 parameters:
+  # Add your parameters here
 
 services:
   _defaults:
     autowire: true
     autoconfigure: true
-
-  App\Auth\:
-    resource: '../src/Auth/'
-    exclude:
-      - '../src/Auth/Entity/'
-
-  App\Transfer\:
-    resource: '../src/Transfer/'
-    exclude:
-      - '../src/Transfer/Entity/'
 
   # Common services
   App\:
@@ -23,3 +14,8 @@ services:
       - '../src/Kernel.php'
       - '../src/Auth'
       - '../src/Transfer'
+
+imports:
+  - { resource: 'services/auth.yaml' }
+  - { resource: 'services/transfer.yaml' }
+

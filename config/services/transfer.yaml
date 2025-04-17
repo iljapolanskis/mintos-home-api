@@ -1,0 +1,15 @@
+parameters:
+  api_open_exchange_rate_app_id: '%env(OPEN_EXCHANGE_RATE_APP_ID)%'
+  api_exchange_rate_api_access_key: '%env(EXCHANGE_RATES_API_ACCESS_KEY)%'
+
+services:
+  App\Transfer\:
+    public: true
+    autowire: true
+    autoconfigure: true
+    resource: '../../src/Transfer/'
+    exclude:
+      - '../../src/Transfer/Entity/'
+    bind:
+      $keyExchangeRateApiService: '%api_exchange_rate_api_access_key%'
+      $keyOpenExchangeRateApiService: '%api_open_exchange_rate_app_id%'

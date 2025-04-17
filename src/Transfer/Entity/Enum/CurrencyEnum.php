@@ -2,16 +2,16 @@
 
 namespace App\Transfer\Entity\Enum;
 
-enum CurrencyEnum: int
+enum CurrencyEnum
 {
-    case USD = 0;
-    case EUR = 1;
-    case GBP = 2;
-    case JPY = 3;
-    case AUD = 4;
-    case CAD = 5;
-    case CHF = 6;
-    case CNY = 7;
+    case USD;
+    case EUR;
+    case GBP;
+    case JPY;
+    case AUD;
+    case CAD;
+    case CHF;
+    case CNY;
 
     public function getLabel(): string
     {

@@ -1,0 +1,6 @@
+services:
+  App\Auth\:
+    public: true
+    resource: '../../src/Auth/'
+    exclude:
+      - '../../src/Auth/Entity/'
